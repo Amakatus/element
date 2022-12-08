@@ -126,6 +126,12 @@ En d'autres termes, en prenant exemple avec ma configuration et mon emplacement 
 login@phy $ ssh-copy-id -i /home/infoetu/sacha.bouton.etu/.ssh/id_rsa.pub sacha.bouton.etu@acajou13
 ```
 
+Note :
+On pourra faire pareil sur la *machine virtuelle* pour notre future machine virtuelle.
+```
+login@virt $ ssh-copy-id -i ~/.ssh/id_rsa.pub user@192.168.194.3
+```
+
 Si on essaye de se reconnecter en ssh, le client va nous demander de nouveau notre <span style="color:salmon">passphrase</span> pour déchiffrer le contenu du fichier <span style="color:salmon">id_rsa</span> en passant par un **agent SSH**.
 Ensuite, lors d’utilisations successives pendant votre session, il n’aura plus à le faire. Vous pourrez donc vous connecter plusieurs fois sans avoir à saisir un mot de passe ou une passphrase.
 
