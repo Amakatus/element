@@ -171,7 +171,7 @@ Avant de faire quoi que ce soit sur le site, il faut d'abord sortir de la *machi
 
 ```
 login@phy $ nano .ssh/config
-````
+```
 
 Puis, dans le script VM, on rajoute les deux lignes suivantes  : 
 ```
@@ -184,17 +184,53 @@ On peut ensuite **revenir** sur notre *machine virtuelle*.
 <span style="color:salmon">**Attention :**</span>
 Il faut donc bien se connecter en utilisant le <span style="color:salmon">ssh vm</span>, sinon le script ne sera pas utilisé et le serveur ne sera pas opérationnel.
 
+On peut maintenant s'occuper du site, si on clique sur le lien on arrive sur la page d'accueil avec une proposition de se connecter, ce qui va nous interesser est le <span style="color:salmon">serveur d'accueil</span>.
 
-Se connecter et changer le serveur en mettant http://[nommachine].iutinfo.fr:8008
+<img src="img/accueilsite.png"></img>
+Il faut modifier le serveur d'accueil de tel sorte qu'il respecte le schéma suivant
+```
+http://[machine].iutinfo.fr:8008
+```
+Si votre serveur est <span style="color:salmon">lancé correctement</span>, cela devrait s'afficher en vert.
+<img src="img/modifier_serveur.png"></img>
 
-Et mettre les logins des utilisateurs qu'on a créer , pour ma part Sacha sacha.
+Ensuite, on peut appuyer sur **Continuer** et rentrer les logins utilisateurs créer au préalable, pour ma part 
+**id : Sacha pswrd : sacha**.
 
-Créer un salon et inviter l'autre utilisateur : 
-Cliquer sur le bouton à droite créer un salon
+On arrive ensuite sur la proposition de création d'<span style="color:salmon">une sauvegarde sécurisée</span>
+<img src="img/config_sauvegarde_securisee.png"></img>.
 
-Afin d'inviter on rentre :  @[nomutilisateur]:[machine].iutinfo.fr:8008
-et on invite simplement.
+A partir de là, on peut cliquer sur **Annuler**, en effet notre configuration actuelle ne permet pas de vérifier l'utilisateur et donc le processus de création va échouer.
+
+<img src="img/accueil_element.png"></img>
+En arrivant sur la page d'accueil d'Element, on aperçoit à droite le bouton **+**.
+Celui-ci sers à créer un espace afin de discuter et tester si notre connexion fonctionne bien.
+Pour se faire : 
+- Créer un espace
+- Public ou privée
+- Aller sur *l'accueil de l'espace*
+
+<img src="img/espace.png"></img>
+A partir de *l'accueil de l'espace*, on peut inviter des utilisateurs, c'est là que la deuxième personne de votre binôme rentre en jeu.
+Celui-ci aura juste à se connecter au <span style="color:salmon">même serveur</span> que vous et utiliser <span style="color:salmon">l'autre utilisateur</span> au préable créer.
+
+<img src="img/invite.png"></img>
+Pour inviter quelqu'un on suit la syntaxe suivante : 
+```
+@[nomutilisateur]:[serveuraccueil]
+```
+Ici, on a choisit d'utiliser comme serveur d'accueil <span style="color:salmon">acajou13</span>.
+
+On peut voir maintenant qu'en allant sur notre serveur créer que l'on peut bien se parler ! 
+<img src="img/chat.png"></img>
 
 ## 2.6) Activation de l'enregistrement des utilisateurs
 
+Afin d'autoriser l'enregistrement des utilisateurs, il faut rajouter la ligne <span style="color:salmon">enable_registration</span> et mettre la valeur à true dans le fichier <span style="color:salmon">/etc/matrix-synapse/homeserver.yaml</span>.
 
+```
+enable_registration: true
+enable_registration_without_verification: true
+```
+
+*Note :* on peut aussi ajouter la deuxième ligne, cela évite la vérification, mais ce n'est pas sécurisé par exemple pour des bots.
