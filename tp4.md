@@ -99,3 +99,59 @@ Recreer machine à l'aide de la procédure 1 , en changeant l'ip par 192.168.194
 installer apt
 installer sudo pour faciliter 
 hostname rproxy
+
+
+
+## Reverse Proxy (Benoît à modif)##
+
+modifier dans /etc/nginx/sites-available/default
+
+    user@rproxy sudo nano /etc/nginx/sites-availables/default
+
+    server {
+        listen 80;
+        listen [::]:80;
+
+        server_name;
+
+    location / {
+        proxy_pass http://192.168.194.3:8008;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    }
+
+Modifier le proxy
+
+    user@rproxy sudo nano /etc/environment
+
+    HTTP_PROXY=http://cache.univ-lille.fr:3128
+    HTTPS_PROXY=http://cache.univ-lille.fr:3128
+    http_proxy=http://cache.univ-lille.fr:3128
+    https_proxy=http://cache.univ-lille.fr:3128
+    # NO_PROXY=localhost,192.168.194.0/24,172.18.48.0/22
+    NO_PROXY=localhost,192.168.194.3,192.168.194.4
+
+Modifier le /etc/matrix-synapse/homeserver.yaml
+
+    user@matrix sudo nano /etc/matrix-synapse/homeserver.yaml
+
+    bind_addresses: ['::1', '127.0.0.1', '192.168.194.3']
+
+
+
+Modifier .ssh/config
+
+    nano .ssh/config
+
+    Host rproxy
+        HostName 192.168.194.4
+        LocalForward 0.0.0.0:8008 localhost:80
+        User user
+        ForwarAgent yes
+
+Pour tester sur la machine de virtualisation : 
+
+    curl 192.168.194.4:80 localhost
