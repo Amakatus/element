@@ -112,7 +112,7 @@ modifier dans /etc/nginx/sites-available/default
         listen 80;
         listen [::]:80;
 
-        server_name;
+        server_name _;
 
     location / {
         proxy_pass http://192.168.194.3:8008;
