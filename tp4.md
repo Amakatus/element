@@ -102,7 +102,7 @@ hostname rproxy
 
 
 
-## Reverse Proxy (Benoît à modif)##
+## Reverse Proxy (Benoît à modif) ##
 
 modifier dans /etc/nginx/sites-available/default
 
@@ -140,6 +140,9 @@ Modifier le /etc/matrix-synapse/homeserver.yaml
 
     bind_addresses: ['::1', '127.0.0.1', '192.168.194.3']
 
+Restart nginx : 
+
+    user@rproxy sudo systemctl restart nginx
 
 
 Modifier .ssh/config
@@ -150,8 +153,17 @@ Modifier .ssh/config
         HostName 192.168.194.4
         LocalForward 0.0.0.0:8008 localhost:80
         User user
-        ForwarAgent yes
+        ForwardAgent yes
 
 Pour tester sur la machine de virtualisation : 
 
-    curl 192.168.194.4:80 localhost
+    curl -x 192.168.194.4:80 localhost
+
+>Renvoie le serveur matrix
+
+Pour testet depuis rproxy :
+
+    user@rproxy curl 192.168.194.3:8080
+    user@rproxy curl 192.168.194.3:8008
+
+>8080 doit renvoyer Element tandis que 8008 renvoie le serveur matrix.
