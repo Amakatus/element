@@ -76,11 +76,11 @@ Il suffit de rentrer les 4 commandes suivantes :
 
 ```
 user@vm $ sudo -E apt install -y lsb-release wget apt-transport-https
-user@vm $ sudo - Ewget -O /usr/share/keyrings/matrix-org-archive-keyring.gpg https://packages.matrix.org/debian/matrix-org-archive-keyring.gpg
+user@vm $ sudo -E wget -O /usr/share/keyrings/matrix-org-archive-keyring.gpg https://packages.matrix.org/debian/matrix-org-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/matrix-org-archive-keyring.gpg] https://packages.matrix.org/debian/ $(lsb_release -cs) main" |
     sudo tee /etc/apt/sources.list.d/matrix-org.list
-user@vm $ sudo - Eapt update
-user@vm $ sudo - Eapt install matrix-synapse-py3
+user@vm $ sudo -E apt update
+user@vm $ sudo -E apt install matrix-synapse-py3
 ```
 
 Le serveur écrira ses messages à destination de l’administrateur (les logs) dans le fichier <span style="color:salmon">/var/log/matrix-synapse/homeserver.log.virtualisation</span>.
@@ -93,7 +93,7 @@ user@vm $ sudo nano /etc/matrix-synapse/homeserver.yaml
 Remplacer par trusted_key_servers: []
 ``` 
 
-Ne pas oubliez de supprimer les serveurs <span style="color:salmon">déjà connus</span> auparavant (**ligne en dessous**).
+Ne pas oubliez de supprimer les serveurs <span style="color:salmon">déjà connus</span> auparavant (**ligne en dessous**).Synapse
 
 ### 2.3) Utilisation d'une base Postgres
 [Doc utilisation postgres synapse](https://matrix-org.github.io/synapse/latest/postgres.html)

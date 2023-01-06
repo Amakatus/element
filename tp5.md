@@ -160,3 +160,113 @@ Il faut également modifier le fichier  <span style="color:salmon">/etc/hosts</s
 ``` 
 
 Afin de vérifier si la modification a bien eu lieu, on peut reboot notre machine.
+
+<span style="font-weight: 800; font-size: 25px; font-style: normal;color : salmon">Maintenant répeter cette opération pour les machines db(192.168.194.5) et element(192.168.194.6). (N'oubliez pas de changer les addresses IP)</span>
+
+
+--------------------------
+
+# Sur la machine Matrix
+
+## 1) Installation de Synapse
+
+### 1.1) Installation du paquet sous Debian
+
+Premièrement, il nous faut installer Synapse, pour se faire on se rend sur leur site et plus précisement dans le [guide d'installation sous Debian](https://matrix-org.github.io/synapse/latest/setup/installation.html#matrixorg-packages)
+
+Il suffit de rentrer les 4 commandes suivantes : 
+
+```
+user@vm $ sudo -E apt install -y lsb-release wget apt-transport-https
+user@vm $ sudo -E wget -O /usr/share/keyrings/matrix-org-archive-keyring.gpg https://packages.matrix.org/debian/matrix-org-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/matrix-org-archive-keyring.gpg] https://packages.matrix.org/debian/ $(lsb_release -cs) main" |
+    sudo tee /etc/apt/sources.list.d/matrix-org.list
+user@vm $ sudo -E apt update
+user@vm $ sudo -E apt install matrix-synapse-py3
+```
+
+Le serveur écrira ses messages à destination de l’administrateur (les logs) dans le fichier <span style="color:salmon">/var/log/matrix-synapse/homeserver.log.virtualisation</span>.
+
+### 1.2) Paramétrage spécifique pour une instance dans un réseau privé
+
+Pour que notre serveur ne contacte aucun autre serveurs, il faut enlever les paramètres de la ligne <span style="color:salmon">trusted_key_servers</span> dans le fichier <span style="color:salmon">/etc/matrix-synapse/homeserver.yaml</span>.
+```
+user@vm $ sudo nano /etc/matrix-synapse/homeserver.yaml
+Remplacer par trusted_key_servers: []
+``` 
+
+Ne pas oubliez de supprimer les serveurs <span style="color:salmon">déjà connus</span> auparavant (**ligne en dessous**).
+
+---------------------
+
+# Sur la machine DB
+
+### 1) Pour installer <span style="color:salmon">Postgresql</span>
+
+```
+root@vm # apt install postgresql
+```
+
+### 1.2) s'assurer que le service est bien lancé
+
+```
+root@vm # systemctl status postgresql
+```
+### 1.3) Utilisation d'une base Postgres
+[Doc utilisation postgres synapse](https://matrix-org.github.io/synapse/latest/postgres.html)
+
+La bibliothèque C libpq permet aux programmes de communiquer avec le serveur de base de données PostgreSQL, elle est nécessaire au bon fonctionnement de postgres.
+```
+user@vm $ sudo apt install libpq5
+``` 
+Ensuite, on se place en tant qu'utilisateur postgres : 
+``` 
+su - postgres
+```
+
+On créer un nouvel utilisateur avec l'argument <span style="color:salmon"> --pwprompt</span>, pour pouvoir créer son mot de passe : 
+``` 
+createuser --pwprompt matrix
+``` 
+On recréer ensuite une base de données avec les arguments suivants :
+- <span style="color:salmon"> --encoding</span> : Spécifiie l'encodage utilisé, ici **UTF-8**
+- <span style="color:salmon"> --locale</span> : Spécifie l'endroit où doit être utilisé la base de données.
+- <span style="color:salmon"> --template</span> : Spécifie la template a utilisé sur notre base de données, après recherche, on utilise **template0** sur des bases de données où les tables ne vont plus changer.
+- <span style="color:salmon"> --owner</span> : Pour spécifier le propriétaire de la table, ici synapse_user que l'on vient de créer.
+``` 
+createdb --encoding=UTF8 --locale=C --template=template0 --owner=matrix matrix
+``` 
+
+
+Modifier les fichier /etc/postgresql/13/main/postgresql.conf et /etc/postgresql/13/main/pg_hba.conf
+
+dans /etc/postgresql/13/main/postgresql.conf il faut décommenter Listen_adresses et le modifier
+
+    listen_adresses = '*'
+
+dans /etc/postgresql/13/main/pg_hba.conf il faut ajouter dans la partie IPV4 
+
+    host  matrix  matrix 192.168.194.0/24  md5
+
+
+-----------------
+# Sur la machine Matrix
+
+Afin que notre serveur Synapse utilise par défaut une base de données <span style="color:salmon"> postgresql</span>, et non pas une base de données <span style="color:salmon"> sqlite</span>.
+Il faut encore une fois modifier le fichier <span style="color:salmon">/etc/matrix-synapse/homeserver.yaml</span>, et changer la configuration du paramètre **database** comme ci-dessous : 
+
+    database:
+        name: psycopg2
+        args:
+            user: matrix
+            password: matrix
+            database: matrix
+            host: 192.168.194.5
+            cp_min: 5
+            cp_max: 10
+
+
+On **redémarre** synapse : 
+```
+user@vm $ sudo systemctl restart matrix-synapse
+```

@@ -67,24 +67,20 @@ dl element:
 https://github.com/vector-im/element-web
 
 wget https://github.com/vector-im/element-web/releases/download/v1.11.16/element-v1.11.16.tar.gz
-tar -xvzf element-v1.11.16.tar.gz 
+
+    tar -xvzf element-v1.11.16.tar.gz 
+
 
 Ensuite, config json faut le cp  
 
 
-cd element-serv/
-ls
-cp config.sample.json config.json
-ls
-cd ..
-ls
-cp -R element-serv/ /var/www/
-sudo cp -R element-serv/ /var/www/
-cd /var/www/
-ls
-sudo rm -Rf html/
-mv element-serv/ html
-sudo mv element-serv/ html
+    cd element-serv/
+    cp config.sample.json config.json
+    cd ..
+    sudo cp -R element-v1.11.16/ /var/www/
+    cd /var/www/
+    sudo rm -Rf html/
+    sudo mv element-serv/ html
 
 ## 2 Reverse proxy pour Synapse 
 
@@ -161,7 +157,7 @@ Pour tester sur la machine de virtualisation :
 
 >Renvoie le serveur matrix
 
-Pour testet depuis rproxy :
+Pour tester depuis rproxy :
 
     user@rproxy curl 192.168.194.3:8080
     user@rproxy curl 192.168.194.3:8008
