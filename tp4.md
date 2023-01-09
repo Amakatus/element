@@ -5,6 +5,7 @@
 
 On a choisit apache : Pourquoi ? Et pourquoi pas nginx?
 
+### 1.1) Configuration d'Apache
 Nous avons donc choisi <span style='color:salmon'>*apache*</span> pour notre client Element
 Au préalable, il faudra désinstaller Nginx ou changer le port car il y aura un conflit, en effet, les deux sont réglées sur le port <span style='color:salmon'>80</span>.
 ```
@@ -59,34 +60,48 @@ user@vm:/etc/apache2/sites-available $ sudo systemctl restart apache2
 ``` 
 
 
-Pour tester si notre serveur marche bien :
-On peut modifier le fichier /var/www/html
-Inserer image apache2
+>Remarque : Pour tester si notre serveur marche bien,
+On peut modifier le fichier <span style='color:salmon'>/var/www/html</span>, si les modifications sont bien prises en compte, c'est que tout est fonctionnel.  
 
-dl element:
-https://github.com/vector-im/element-web
+### 1.2) Mise en place d'Element
 
-wget https://github.com/vector-im/element-web/releases/download/v1.11.16/element-v1.11.16.tar.gz
+Tout d'abord, il faut installer <span style='color:salmon'>Element</span>, pour se faire, il suffit d'utiliser la commande **wget** :
+```
+user@vm $ wget https://github.com/vector-im/element-web/releases/download/v1.11.16/element-v1.11.16.tar.gz
+```
 
-    tar -xvzf element-v1.11.16.tar.gz 
+Cela nous donne une archive <span style='color:salmon'>tar.gz</span> qu'il faut désarchiver avec la commande **tar**
+```
+user@vm $ tar -xvzf element-v1.11.16.tar.gz 
+```
 
+Ensuite, il faut copier le <span style='color:salmon'>config.json</span>, en se plaçant dans le dossier désarchivé :
 
-Ensuite, config json faut le cp  
+>Remarque : nous avons renomé le dossier <span style='color:salmon'>element</span> en **element-serv** au préalable avec la commande cp pour plus de lisibilité 
+```
+user@vm $ cp element-v1.11.16 element-serv
+```
+Puis :
+```
+user@vm:/element-serv $ cp config.sample.json config.json
+user@vm: $ sudo -cp -R element-serv/ /var/www/
+user@vm:/var/www $ sudo rm -Rf html/
+user@vm:/var/www $ sudo mv element-serv/ html
+```
 
-
-    cd element-serv/
-    cp config.sample.json config.json
-    cd ..
-    sudo cp -R element-v1.11.16/ /var/www/
-    cd /var/www/
-    sudo rm -Rf html/
-    sudo mv element-serv/ html
+>Après avoir fait les commandes ci-dessus, on obtient un element implanté dans apache et est **accessible** via le <span style='color:salmon'>serveur web</span>. 
 
 ## 2 Reverse proxy pour Synapse 
 
 ### 2.1) Introduction et choix d'un reverse proxy   
 
-Recreer machine à l'aide de la procédure 1 , en changeant l'ip par 192.168.194.4 avec la gateawy sinon pas de réseau
+Il faut tout d'abord <span style='color:salmon'>recréer</span> une machine de zéro, pour cela il nous faudra suivre les procédures 1 2 et 3, voici les choses importantes :
+
+- 1- Créer une machine avec **vmiut** (<span style='color:salmon'>Procédure 1</span>)
+- 2- Configurer le réseau de la machine en utilisant comme **IP** : 192.168.194.4 et ne pas oublier la **gateway** (<span style='color:salmon'>Procédure 1</span>)
+- 3- Mise à jour de la machine avec **apt** (<span style='color:salmon'>Procédure 1</span>)
+- 4- Installer **sudo** pour faciliter l'utilisation de la machine (<span style='color:salmon'>Procédure 2</span>)
+- 5- Changer l'hostname de la machine en **rproxy** (<span style='color:salmon'>Procédure 2</span>)
 
 -> Ajouter dans .ssh/config des scripts pour accéder rapidement à rproxy.
 
