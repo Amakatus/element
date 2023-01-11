@@ -105,25 +105,25 @@ Il faut tout d'abord <span style='color:salmon'>recréer</span> une machine de z
 
 -> Ajouter dans .ssh/config des scripts pour accéder rapidement à rproxy.
 
-
- procédure 2 
-installer apt
-installer sudo pour faciliter 
-hostname rproxy
-
-
-
 ## Reverse Proxy (Benoît à modif) ##
 
-modifier dans /etc/nginx/sites-available/default
+Nous utiliserons Nginx pour le reverse proxy [expliquer]
 
-    user@rproxy sudo nano /etc/nginx/sites-availables/default
+Premièrement, il faut l'installer avec **apt** :
+```
+user@vm $ sudo -E apt install nginx
+```
+Ensuite, il faut aller modifier les **sites-available**, afin qu'il écoute bien sur le port *80*, il faut aussi modifier le <span style='color:salmon'>proxy_pass</span> afin que notre reverse proxy renvoie bien à notre machine virtuelle **matrix** qui elle possède le *serveur web* et <span style='color:salmon'>**Element**</span>.
+```
+user@rproxy sudo nano /etc/nginx/sites-availables/default
+```
+Notre configuration par défaut devrait ressembler à ça après modification :
+```
+server {
+    listen 80;
+    listen [::]:80;
 
-    server {
-        listen 80;
-        listen [::]:80;
-
-        server_name _;
+    server_name _;
 
     location / {
         proxy_pass http://192.168.194.3:8008;
@@ -132,49 +132,63 @@ modifier dans /etc/nginx/sites-available/default
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-    }
+}
+```
+Il faut aussi modifier les <span style='color:salmon'>variables d'environnements</span> et renseigner un **NO_PROXY** avec les **ip** de <span style='color:salmon'>matrix</span> et celle du <span style='color:salmon'>rproxy</span>.
+```
+user@rproxy sudo nano /etc/environment
+```
+Rajouter le **NO_PROXY** en n'oubliant pas de **commenter** la ligne au dessus sinon le proxy ne sera pas effectif.
+```
+HTTP_PROXY=http://cache.univ-lille.fr:3128
+HTTPS_PROXY=http://cache.univ-lille.fr:3128
+http_proxy=http://cache.univ-lille.fr:3128
+https_proxy=http://cache.univ-lille.fr:3128
+# NO_PROXY=localhost,192.168.194.0/24,172.18.48.0/22
+NO_PROXY=localhost,192.168.194.3,192.168.194.4
+```
 
-Modifier le proxy
+De plus, sur la machine *machine virtuelle* <span style='color:salmon'>matrix</span> afin de changer la configuration du fichier <span style='color:salmon'>homeserver.yaml</span>.
 
-    user@rproxy sudo nano /etc/environment
+```
+user@matrix sudo nano /etc/matrix-synapse/homeserver.yaml
+bind_addresses: ['::1', '127.0.0.1', '192.168.194.3']
+```
 
-    HTTP_PROXY=http://cache.univ-lille.fr:3128
-    HTTPS_PROXY=http://cache.univ-lille.fr:3128
-    http_proxy=http://cache.univ-lille.fr:3128
-    https_proxy=http://cache.univ-lille.fr:3128
-    # NO_PROXY=localhost,192.168.194.0/24,172.18.48.0/22
-    NO_PROXY=localhost,192.168.194.3,192.168.194.4
+>Remarque : Ne pas oublier de redémarrer le service nginx ainsi que le service matrix-synapse après les manipulations.
+```
+user@rproxy $ sudo systemctl restart nginx
+user@matrix $ sudo systemctl restart matrix-synapse
+```
 
-Modifier le /etc/matrix-synapse/homeserver.yaml
+Notre configuration de nginx est terminée.
+**Cependant**, il reste encore à configurer notre configuration ssh et le tunnel pour <span style='color:salmon'>rproxy</span>.
+```
+login@phy $ nano .ssh/config
+```
+!!! A verifier !!!
+```
+Host rproxy
+    HostName 192.168.194.4
+    LocalForward 0.0.0.0:8008 localhost:80
+    User user
+    ForwardAgent yes
+```
+Cela nous permettra d'établir un tunnel !!! expliquer !!!
 
-    user@matrix sudo nano /etc/matrix-synapse/homeserver.yaml
-
-    bind_addresses: ['::1', '127.0.0.1', '192.168.194.3']
-
-Restart nginx : 
-
-    user@rproxy sudo systemctl restart nginx
-
-
-Modifier .ssh/config
-
-    nano .ssh/config
-
-    Host rproxy
-        HostName 192.168.194.4
-        LocalForward 0.0.0.0:8008 localhost:80
-        User user
-        ForwardAgent yes
+Afin de voir si nos configurations sont correctes on peut effectuer divers tests :
 
 Pour tester sur la machine de virtualisation : 
-
-    curl -x 192.168.194.4:80 localhost
-
->Renvoie le serveur matrix
+```
+login@virt $ curl -x 192.168.194.4:80 localhost
+```
+>Doit renvoyer le serveur matrix.
 
 Pour tester depuis rproxy :
-
-    user@rproxy curl 192.168.194.3:8080
-    user@rproxy curl 192.168.194.3:8008
-
->8080 doit renvoyer Element tandis que 8008 renvoie le serveur matrix.
+```
+user@rproxy $ curl 192.168.194.3:8080
+user@rproxy $ curl 192.168.194.3:8008
+```
+>8080 doit renvoyer Element.
+ 
+>8008 renvoie le serveur matrix.
