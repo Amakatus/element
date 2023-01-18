@@ -3,10 +3,17 @@
 
 ## 1) Element Web
 
-On a choisit apache : Pourquoi ? Et pourquoi pas nginx?
+Nous avons choisi d'utiliser <span style='color:salmon'>Apache</span>, mais <span style='color:salmon'>Nginx</span> aurait pu être un choix viable puisque : 
+
+- La principale différence entre les serveurs web NGINX et Apache et que NGINX a une architecture qui traite de multiples requêtes au sein d'un même thread, alors qu'Apache est piloté par les processsus et crée un thread pour chaque requête.
+
+Chaque logiciel a ses avantages et ses inconvénients, de sorte que la décision d’utiliser NGINX ou Apache dépendra entièrement de nos préférences c'est pourquoi nous avons choisis <span style='color:salmon'>Apache</span> pour le serveur web :
+
+Mis à part le multi-threading ce qui nous a aidé à choisir est que NGINX est plus rapide qu’Apache pour fournir du contenu statique, mais il a besoin de l’aide d’un autre logiciel pour traiter les demandes de contenu dynamique. D’autre part, Apache peut gérer le contenu dynamique en interne.
+
+Dans notre cas le contenu est de type dynamique, le choix s'est donc porté sur <span style='color:salmon'>Apache</span>.
 
 ### 1.1) Configuration d'Apache
-Nous avons donc choisi <span style='color:salmon'>*apache*</span> pour notre client Element
 Au préalable, il faudra désinstaller Nginx ou changer le port car il y aura un conflit, en effet, les deux sont réglées sur le port <span style='color:salmon'>80</span>.
 ```
 sudo -E apt install apache2
@@ -94,6 +101,9 @@ user@vm:/var/www $ sudo mv element-serv/ html
 ## 2 Reverse proxy pour Synapse 
 
 ### 2.1) Introduction et choix d'un reverse proxy   
+
+Pour le <span style='color:salmon'> reverse proxy, nous avons choisi d'utiliser nginx</span> :
+Au lieu de choisir soit NGINX soit Apache, il peut être plus efficace d’utiliser les deux logiciels pour améliorer les performances de votre serveur – NGINX comme serveur proxy inverse pour traiter les demandes de contenu statique et Apache comme back-end pour servir le contenu dynamique.
 
 Il faut tout d'abord <span style='color:salmon'>recréer</span> une machine de zéro, pour cela il nous faudra suivre les procédures 1 2 et 3, voici les choses importantes :
 
