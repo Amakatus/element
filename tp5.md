@@ -23,6 +23,36 @@ login@phys $ ssh -X virtu
 ```
 Si on relance la commande <span style="color:salmon">console</span>, on peut désormais se connecter avec le compte <span style="color:salmon">user</span> pour continuer notre tp.
 
+Une fois fait, il est préférable que notre machine ait toujours la même adresse IP, nous allons choisir l'adresse 192.168.194.3.
+
+Premièrement, il faut couper l'interface réseau avec la commande :
+```
+root@vm # ifdown enp0s3
+```
+
+Ensuite, il faut modifier les fichiers <span style="color:salmon">/etc/network/interfaces</span> et <span style="color:salmon">/etc/resolv.conf</span> de façon à ce que la VM ait l'adresse statique 192.168.194.3 et qu'elle utilise le routeur 192.168.194.2 et serveur DNS 192.168.194.2.
+
+pour le fichier <span style="color:salmon">interface</span> : 
+```
+allow-hotplug enp0s3
+iface enp0s3 inet static
+        address 192.168.194.3
+        gateway 192.168.194.2
+```
+
+pour le fichier <span style="color:salmon">resolv.conf</span> :
+```
+domain localdomain
+search localdomain
+nameserver 192.168.194.2
+```
+à priori, le fichier <span style="color:salmon">resolv.conf</span> est déjà configuré comme au-dessus, mais on ne sait jamais.
+
+On peut désormais redémarrer l'interface réseau avec la commande qui suit : 
+```
+root@vm # ifup enp0s3
+```
+
 On peut maintenant à partir de la console se connecter à la *machine virtuelle* sur la *machine de virtualisation* en utilisant le SSH : 
 ```
 login@virt $ ssh user@192.168.194.xx
@@ -33,7 +63,7 @@ En remplaçant xx par votre IP.
 
 La machine est connecté au *réseau virtuel principal*, il est privé et notre machine n'est pas routé. Autrement dit, aucune machine, autre que votre machine de virtualisation et vos machines virtuelles, n’a accès à ce réseau.
 
-Afin de se connecter il faut configurer le <span style="color:salmon">proxy</span>, pour se faire il faut ajouter les variables d'environnements suivante :
+Afin de se connecter il faut configurer le <span style="color:salmon">proxy</span>, pour se faire il faut ajouter les variables d'environnements suivante en root (su -l):
 
 - HTTP_PROXY=[proxy]
 - HTTPS_PROXY=[proxy]
@@ -81,6 +111,7 @@ NTP=ntp.univ-lille.fr
 
 Si maintenant on utilise la commande <span style="color:salmon">systemctl</span> avec l'argument status, on doit obtenir, en supposant qu'on a reboot au préalable avec la commande:
 ```
+root@vm # systemctl restart systemd-timesyncd
 root@vm # systemctl status systemd-timesyncd
 ```
 Affichage attendu
@@ -185,6 +216,8 @@ user@vm $ sudo -E apt update
 user@vm $ sudo -E apt install matrix-synapse-py3
 ```
 
+Pour le nom du serveur il faut donc mettre virtu.iutinfo.fr:9090 (en remplaçant <span style="color: salmon"> virtu </span> par le nom de votre machine de virtualisation)
+
 Le serveur écrira ses messages à destination de l’administrateur (les logs) dans le fichier <span style="color:salmon">/var/log/matrix-synapse/homeserver.log.virtualisation</span>.
 
 ### 1.2) Paramétrage spécifique pour une instance dans un réseau privé
@@ -248,6 +281,10 @@ dans /etc/postgresql/13/main/pg_hba.conf il faut ajouter dans la partie IPV4
 
     host  matrix  matrix 192.168.194.0/24  md5
 
+Il faut restart postgresql
+
+        root@vm $ systemctl restart postgresql
+
 
 -----------------
 # Sur la machine Matrix
@@ -265,8 +302,72 @@ Il faut encore une fois modifier le fichier <span style="color:salmon">/etc/matr
             cp_min: 5
             cp_max: 10
 
+    suppr : database: /var/lib/matrix-synapse/homeserver.db
+
 
 On **redémarre** synapse : 
 ```
 user@vm $ sudo systemctl restart matrix-synapse
 ```
+
+
+
+## sur rproxy
+
+
+modifier /etc/nginx/sites-available/default: 
+
+        server {
+            listen 9090;
+            listen [::]:9090;
+
+            server_name _;
+
+        location / {
+            proxy_pass http://192.168.194.3:9090;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+        server {
+            listen 9090;
+            listen [::]:9090;
+
+            server_name ayou21.iut-infobio.priv.univ-lille1.fr;
+
+        location / {
+            proxy_pass http://192.168.194.6:8080;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+
+## sur matrix
+
+modifier /etc/matrix-synapse/homeserver.yaml :
+
+    listeners:
+        - port: 9090
+        tls: false
+        type: http
+        x_forwarded: true
+        bind_addresses: ['::1', '127.0.0.1','192.168.194.3']
+        resources:
+            - names: [client, federation]
+            compress: false
+
+
+
+
+
+## sur la machine physique ou de virtualisation modifier le .ssh/config :
+
+    Host rproxy
+        User user
+        HostName 192.168.194.4
+        LocalForward 0.0.0.0:9090 localhost:9090
+        ForwardAgent yes

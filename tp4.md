@@ -79,12 +79,12 @@ Ensuite, il faut copier le <span style='color:salmon'>config.json</span>, en se 
 
 >Remarque : nous avons renomé le dossier <span style='color:salmon'>element</span> en **element-serv** au préalable avec la commande cp pour plus de lisibilité 
 ```
-user@vm $ cp element-v1.11.16 element-serv
+user@vm $ cp -R element-v1.11.16 element-serv
 ```
 Puis :
 ```
 user@vm:/element-serv $ cp config.sample.json config.json
-user@vm: $ sudo -cp -R element-serv/ /var/www/
+user@vm: $ sudo cp -R element-serv/ /var/www/
 user@vm:/var/www $ sudo rm -Rf html/
 user@vm:/var/www $ sudo mv element-serv/ html
 ```
