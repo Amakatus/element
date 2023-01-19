@@ -176,7 +176,7 @@ Notre configuration de nginx est terminée.
 ```
 login@phy $ nano .ssh/config
 ```
-!!! A verifier !!!
+
 ```
 Host rproxy
     HostName 192.168.194.4
@@ -184,17 +184,16 @@ Host rproxy
     User user
     ForwardAgent yes
 ```
-Cela nous permettra d'établir un tunnel !!! expliquer !!!
 
 Afin de voir si nos configurations sont correctes on peut effectuer divers tests :
 
-Pour tester sur la machine de virtualisation : 
+Pour tester sur la *machine de virtualisation* : 
 ```
 login@virt $ curl -x 192.168.194.4:80 localhost
 ```
 >Doit renvoyer le serveur matrix.
 
-Pour tester depuis rproxy :
+Pour tester depuis *rproxy* :
 ```
 user@rproxy $ curl 192.168.194.3:8080
 user@rproxy $ curl 192.168.194.3:8008

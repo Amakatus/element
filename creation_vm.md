@@ -1,6 +1,7 @@
-Conditions : 
-
-
+---
+title: Création d'une machine virtuelle basique
+author: Sacha BOUTON et Benoît MISPLON
+---
 
 **Attention** vous devez exécuter toutes les commandes de cette section sur votre **machine de virtualisation**.
 
@@ -13,7 +14,7 @@ login@virt $ source /home/public/vm/vm.env
 ```
 Puis, lancer la commande <span style="color:salmon">vmiut</span> sans paramètre affichera un message d’aide. Vous devrez utiliser la commande <span style="color:salmon">source</span> dans chaque nouveau shell.
 
-### 4.1) Utilisation du script <span style="color:salmon">VMIUT</span>
+### 1) Utilisation du script <span style="color:salmon">VMIUT</span>
 Voici toutes les commandes basiques et utile pour manipuler des *machines virtuelles* : 
 
 Pour créer une machine virtuelle, en remplaçant le <span style="color:salmon">nom</span> par le nom de votre machine virtuelle.
@@ -42,9 +43,9 @@ login@virt $ vmiut info [nom]
 ```
 Parmi les informations disponible, on peut voir par exemple l'adresse IP de la machine avec la ligne <span style="color:salmon">ip-possible</span>, si cette ligne est vide, il faut attendre un peu et relancer la commande.
 
-## 5) La machine virtuelle
+## 2) La machine virtuelle
 
-### 5.1) Informations sur le réseau et la VM
+### 2.1) Informations sur le réseau et la VM
 
 Afin de mieux comprendre comment fonctionne le *réseau virtuel principal*, voici quelques informations utiles :
 
@@ -61,7 +62,7 @@ La machine virtuelle a été créée à partir d'un modèle. Voici les caractér
 - Administrateur:<span style="color:salmon">root</span>, mot de passe: <span style="color:salmon">root</span>
 - empreinte de clé SSH: <span style="color:salmon">SHA256:SUHhxVJVZFiBQ6/koNbZfA9reKHyzIrvPgJvOEJ8zuE</span>
 
-### 5.2) Utilisation de la machine virtuelle
+### 2.2) Utilisation de la machine virtuelle
 
 Pour pouvoir lancer la console virtuelle , il faut lancer la commande :
 ```
@@ -81,7 +82,7 @@ login@virt $ ssh user@192.168.194.xx
 ```
 En remplaçant xx par votre IP.
 
-### 5.3) Changer la configuration réseau
+### 2.3) Changer la configuration réseau
 
 Dans cette partie nous travaillerons depuis notre **console virtuelle**, en mode <span style="color:salmon">administrateur/root</span>.
 Pour ce faire, il faudra se déconnecter de notre console, et la relancer en entrant les <span style="color:salmon">identifiants root</span> cette fois.
@@ -126,9 +127,9 @@ Utilisez la commande suivante pour redémarrer la machine virtuelle et vérifier
 root@vm# reboot
 ```
 
-## 6) Configurer et mettre à jour la machine virtuelle
+## 3) Configurer et mettre à jour la machine virtuelle
 
-### 6.1) Connexion <span style="color:salmon">root</span> et SSH
+### 3.1) Connexion <span style="color:salmon">root</span> et SSH
 
 Afin de se connecter à la *machine virtuelle* en SSH en compte root, on peut essayer plusieurs alternatives, mais la plus intéressante reste d'utiliser la commande <span style="color:salmon">su</span>.
 
@@ -138,7 +139,7 @@ user@vm $ su --login
 ```
 Cela devrait normalement vous passer en mode administrateur.
 
-### 6.2) Accès extérieur pour les VM
+### 3.2) Accès extérieur pour les VM
 
 La machine est connecté au *réseau virtuel principal*, il est privé et notre machine n'est pas routé. Autrement dit, aucune machine, autre que votre machine de virtualisation et vos machines virtuelles, n’a accès à ce réseau.
 
@@ -165,10 +166,7 @@ Pour tester si cela fonctionne, on peut essayer la commande <span style="color:s
 user@vm $ wget https://www.framasoft.org
 ```
 
-
-
-
-### 6.3) Mise à jour de la machine
+### 3.3) Mise à jour de la machine
 
 Le modèle fourni est daté, il y a eu des mises à jours entre temps publiées par Debian, nous devons donc le mettre à niveau grâce à la commande <span style="color:salmon">apt</span> :
 ```
@@ -177,7 +175,7 @@ root@vm # apt update && apt full-upgrade
 
 et laissez se terminer la mise à jour. Si cette dernière vous pose une question au sujet de <span style="color:salmon">GRUB</span>, cochez la case <span style="color:salmon">[ ] /dev/sda</span> à l’aide de la barre d’espacement.
 
-### 6.4) Installer des outils
+### 3.4) Installer des outils
 
 En utilisant <span style="color:salmon">apt</span>, on peut installer des outils plutôt utiles comme :
 
@@ -197,3 +195,91 @@ apt install tree
 ```
 apt install rsync
 ```
+
+## 4) Dernière configuration sur la VM
+
+### 4.1) Changement du nom de machine
+
+Pour changer de nom de machine il faut utiliser la commande <span style="color:salmon">hostname</span>.
+```
+root@vm # nano /etc/hostname
+``` 
+
+Et changer le nom par ce que l'on veut.
+
+Il faut également modifier le fichier  <span style="color:salmon">/etc/hosts</span>,en remplaçant *debian* par *matrix* : 
+```                              
+127.0.0.1       localhost
+127.0.1.1       matrix <- ici
+``` 
+
+Afin de vérifier si la modification a bien eu lieu, on peut reboot notre machine.
+
+### 4.2) Installation et configuration de la commande <span style="color:salmon">sudo</span>
+
+Pour installer sudo :
+```
+root@vm # apt install sudo
+```
+
+Pour donner les droits sudo à un user : 
+```
+root@vm # adduser user sudo
+ou
+root@vm # usermod -aG sudo nomutilisateur
+```
+
+Pour vérifier qu'on a bien les droits sudo en ayant au préalable **redémarrer** la machine: 
+```
+user@vm # sudo whoami
+```
+
+### 4.3) Configuration de la synchronisation d'horloge
+La machine physique et de virtualisation sont à l'heure, mais la machine virtuelle a une heure d'avance.
+
+Si on affiche les événement systèmes de l'*unit service* <span style="color:salmon">systemd-timesyncd</span> avec le journalctl : 
+```
+user@vm # journalctl "_SYSTEMD_UNIT=systemd-timesyncd"
+```
+
+Cela ne nous affiche rien car elle la machine n'est pas synchronisée.
+
+Afin de régler ce soucis il faut d'abord modifier le fichier <span style="color:salmon">/etc/systemd/timesyncd.conf </span>
+```
+root@vm # nano /etc/systemd/timesyncd.conf 
+```
+Puis dans ce fichier, rajouter la ligne <span style="color:salmon">ntp.univ-lille.fr</span> et ne pas oublier de **DECOMMENTER** la ligne.
+```
+NTP=ntp.univ-lille.fr
+#FallbackNTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+#RootDistanceMaxSec=5
+#PollIntervalMinSec=32
+#PollIntervalMaxSec=2048
+```
+
+Si maintenant on utilise la commande <span style="color:salmon">systemctl</span> avec l'argument status, on doit obtenir, en supposant qu'on a reboot au préalable avec la commande:
+```
+root@vm # systemctl status systemd-timesyncd
+```
+Affichage attendu
+```
+root@matrix:~# systemctl status systemd-timesyncd
+● systemd-timesyncd.service - Network Time Synchronization
+     Loaded: loaded (/lib/systemd/system/systemd-timesyncd.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2022-11-24 10:03:37 CET; 59min left
+       Docs: man:systemd-timesyncd.service(8)
+   Main PID: 510 (systemd-timesyn)
+     Status: "Initial synchronization to time server 193.49.225.86:123 (ntp.univ-lille.fr)."
+      Tasks: 2 (limit: 1132)
+     Memory: 1000.0K
+        CPU: 35ms
+     CGroup: /system.slice/systemd-timesyncd.service
+             └─510 /lib/systemd/systemd-timesyncd
+
+nov. 24 10:03:36 matrix systemd[1]: Starting Network Time Synchronization...
+nov. 24 10:03:37 matrix systemd[1]: Started Network Time Synchronization.
+nov. 24 09:03:37 matrix systemd-timesyncd[510]: Initial synchronization to time server 193.49.225.86:123 (ntp.univ-lille.fr).
+```
+Les trois dernières lignes, si on lance la commande avec les permissions <span style="color:salmon">user</span> ne seront pas affichées, mais on pourra quand même observer que notre service est **Active**.
+
+Une fois toutes les **manipulations** effectuées vous pouvez passer à la [configuration ssh](./configuration_ssh.md).
