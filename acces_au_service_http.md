@@ -3,6 +3,10 @@ title: Accès à un service HTTP sur la VM
 author: Sacha BOUTON et Benoît MISPLON
 ---
 
+## Conditions pour effectuer la procédure : 
+-   Avoir une [machine virtuelle basique fonctionnelle](./creation_vm.md)
+-   Avoir connaissance du [vocabulaire technique](./introduction_et_vocabulaire.md)
+
 Pour que le service que nous allons installer soit accessible de toutes les machines de TP de l’IUT, celui-ci doit écouter sur les interfaces réseaux de notre machine de virtualisation.
 
 ### 1.1) Un premier service pour tester

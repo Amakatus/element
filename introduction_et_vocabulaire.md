@@ -3,6 +3,9 @@ title: Introduction et vocabulaire
 author: Sacha BOUTON et Benoît MISPLON
 ---
 
+## Conditions pour effectuer la procédure : 
+-   Aucune
+
 ## 1) Un peu de vocabulaire et de convention
 
 Afin de bien se comprendre tout au long de cette SAE, voici le vocabulaire de base qui sera employé durant les procédures :

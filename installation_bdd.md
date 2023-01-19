@@ -3,6 +3,10 @@ title: Installation et configuration basique d'un serveur de base de données
 author: Sacha BOUTON et Benoît MISPLON
 ---
 
+## Conditions pour effectuer la procédure : 
+-   Avoir une [machine virtuelle basique fonctionnelle](./creation_vm.md)
+-   Avoir connaissance du [vocabulaire technique](./introduction_et_vocabulaire.md)
+
 Il faut désormais installer **Postgresql** qui va nous servir à mettre en place notre base de données.
 
 ### 1) Pour installer <span style="color:salmon">Postgresql</span>
