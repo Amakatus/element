@@ -9,7 +9,7 @@ author: Sacha BOUTON et Benoît MISPLON
 
 Il faut désormais installer **Postgresql** qui va nous servir à mettre en place notre base de données.
 
-### 1) Pour installer <span style="color:salmon">Postgresql</span>
+### 1) Pour installer `Postgresql`
 
 Toujours sur matrix, installer **postgresql**
 
@@ -22,7 +22,7 @@ Pour s'assurer que le service est bien lancé
 ```
 root@vm # systemctl status postgresql
 ```
-### 2) Se connecter à la base de données <span style="color:salmon">Postgresql</span>
+### 2) Se connecter à la base de données `Postgresql`
 
 Il faut au préalable se connecter à la base de données :
 ```
@@ -42,7 +42,7 @@ createuser -r -l -P -d matrix
 
 ### 3) Créer une base de données et la manipuler 
 
-Afin de créer une nouvelle base de données qui a comme <span style="color:salmon">owner</span> :  matrix et comme <span style="color:salmon">nom</span> : matrix
+Afin de créer une nouvelle base de données qui a comme `owner` :  matrix et comme `nom` : matrix
 
 ```
 createdb -O matrix matrix
@@ -53,7 +53,7 @@ Afin de se connecter à la base de données que l'on vient de créer il faut uti
 psql -h localhost -U matrix -d matrix
 ```
 
-Ensuite, on créée la <span style="color:salmon">table</span> *test* dans la base de données matrix: 
+Ensuite, on créée la `table` *test* dans la base de données matrix: 
 ```
 Create table test(personid int ,prenomvar char(25));
 ```

@@ -8,7 +8,7 @@ author: Sacha BOUTON et Benoît MISPLON
 -   Avoir connaissance du [vocabulaire technique](./introduction_et_vocabulaire.md)
 
 
-Afin d'aller plus vite durant la manipulation des différentes machines, on peut créer des scripts, en modifiant le fichier config qui se trouve à l'emplacement : <span style="color:salmon">$HOME/.ssh/config</span>
+Afin d'aller plus vite durant la manipulation des différentes machines, on peut créer des scripts, en modifiant le fichier config qui se trouve à l'emplacement : `$HOME/.ssh/config`
 
 - créer un alias **virt** pour notre machine de virtualisation. Ainsi, si notre machine de virtualisation est meleze12.iutinfo.fr, alors utiliser la commande ssh virt effectura en réalité l’équivalent de la commande ssh meleze12.iutinfo.fr :
 ```

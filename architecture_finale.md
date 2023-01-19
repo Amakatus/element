@@ -12,7 +12,7 @@ Dans un premier temps vous allez devoir recréer votre machine `matrix` mais aus
 
 Pour ce qui est de leur configuration je vous conseille de suivre la procédure [sur la création d'une vm.](./creation_vm.md) tout en respectant l'architecture ci-dessous.
 
->Attention lorsque vous modifierez le fichier <span style="color:salmon">/etc/hosts</span>, il faudra le modifier comme ceci en ajoutant les autres machines pour qu'elles puissent communiquer entre elles.:
+>Attention lorsque vous modifierez le fichier `/etc/hosts`, il faudra le modifier comme ceci en ajoutant les autres machines pour qu'elles puissent communiquer entre elles.:
 
 ```                              
 127.0.0.1       localhost
@@ -23,13 +23,13 @@ Pour ce qui est de leur configuration je vous conseille de suivre la procédure 
 ``` 
 
 
- ![Architecture fianle](./img/architecture_finale.PNG)
+ ![Architecture finale](./img/architecture_finale.PNG)
 
 
 
 ## 2) Postgresql
 
-Maintenant sur votre machine `db` vous devrais installer [postgresql](./installation_bdd.md) avant de suivre cette documentation veillez à bien installer postgresql avant :
+Maintenant sur votre machine `db` vous devrez installer [postgresql et le lier avec synapse avec la partie 1.3](./installation_synapse.md) avant de suivre cette documentation veillez à bien installer postgresql avant :
 
     root@db # apt install postgresql
 
