@@ -3,7 +3,7 @@ title: Installation du reverse proxy
 author: Sacha BOUTON et Benoît MISPLON
 ---
 
-## Conditions pour effectuer la procédure : 
+## Prérequis pour effectuer la procédure : 
 -   Avoir une [machine virtuelle basique fonctionnelle](./creation_vm.md).
 -   Avoir connaissance du [vocabulaire technique](./introduction_et_vocabulaire.md).
 -   Avoir une [base de données basique fonctionnelle](./installation_bdd.md).

@@ -3,7 +3,7 @@ title: Création d'une machine virtuelle basique
 author: Sacha BOUTON et Benoît MISPLON
 ---
 
-## Conditions pour effectuer la procédure : 
+## Prérequis pour effectuer la procédure :  
 -   Avoir connaissance du [vocabulaire technique](./introduction_et_vocabulaire.md)
 
 **Attention** vous devez exécuter toutes les commandes de cette section sur votre **machine de virtualisation**.

@@ -3,6 +3,8 @@ title: Accès à un service HTTP sur la VM
 author: Sacha BOUTON et Benoît MISPLON
 ---
 
+## Prérequis pour effectuer la procédure : 
+    - Avoir fait toutes les procédures précedentes
 
 ## Nous allons donc maintenant passé à l'installation de l'architecture finale.
 

@@ -3,7 +3,7 @@ title: Introduction et vocabulaire
 author: Sacha BOUTON et Benoît MISPLON
 ---
 
-## Conditions pour effectuer la procédure : 
+## Prérequis pour effectuer la procédure : 
 -   Aucune
 
 ## 1) Un peu de vocabulaire et de convention
